@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { AdminService } from "./admin.service";
 
 const getAllAdminFromDB = async (req: Request, res: Response) => {
-  const result = await AdminService.getAllAdminFromDB();
-  console.log(result);
+  console.log(req.query);
+  const result = await AdminService.getAllAdminFromDB(req.query);
   try {
     res.status(200).json({
       success: true,
