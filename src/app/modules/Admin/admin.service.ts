@@ -43,7 +43,10 @@ const getAllAdminFromDB = async (params: any, options: any) => {
           }
         : { createdAt: "asc" },
   });
-  return result;
+  return {
+    meta: { page, limit },
+    data: result,
+  };
 };
 
 export const AdminService = {
