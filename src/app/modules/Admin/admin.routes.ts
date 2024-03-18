@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.get("/", AdminController.getAllAdminFromDB);
 router.get("/:id", AdminController.getAdminByIdFromDB);
+router.patch("/:id", AdminController.updateAdminById);
 
 export const AdminRoutes = router;
