@@ -2,13 +2,17 @@ import { Request, Response } from "express";
 import { AdminService } from "./admin.service";
 import pick from "../../../shared/pick";
 import { adminFilterableFields } from "./admin.constant";
+import sendResponse from "../../../shared/sendResponse";
+
+
 
 const getAllAdminFromDB = async (req: Request, res: Response) => {
   try {
     const filter = pick(req.query, adminFilterableFields);
     const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
     const result = await AdminService.getAllAdminFromDB(filter, options);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Admin data fetched.",
       meta: result.meta,
@@ -27,9 +31,10 @@ const getAdminByIdFromDB = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await AdminService.getAdminByIdFromDB(id);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
-      message: "Admin data fetched by ID.",
+      message: "Admin data fetched.",
       data: result,
     });
   } catch (error) {
@@ -45,7 +50,8 @@ const updateAdminById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await AdminService.updateAdminById(id, req.body);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Admin data updated successfully.",
       data: result,
@@ -63,7 +69,8 @@ const deleteAdminFromDB = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await AdminService.deleteAdminFromDB(id);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Admin deleted successfully.",
       data: result,
@@ -81,7 +88,8 @@ const softDeleteAdminFromDB = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await AdminService.softDeleteAdminFromDB(id);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Admin soft deleted successfully.",
       data: result,
