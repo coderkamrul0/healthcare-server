@@ -6,7 +6,8 @@ import { adminFilterableFields } from "./admin.constant";
 const getAllAdminFromDB = async (req: Request, res: Response) => {
   try {
     const filter = pick(req.query, adminFilterableFields);
-    const result = await AdminService.getAllAdminFromDB(filter);
+    const options = pick(req.query, ["limit", "page"]);
+    const result = await AdminService.getAllAdminFromDB(filter, options);
     res.status(200).json({
       success: true,
       message: "Admin data fetched.",
