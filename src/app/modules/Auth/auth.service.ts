@@ -7,10 +7,15 @@ const loginUser = async (payload: { email: string; password: string }) => {
       email: payload.email,
     },
   });
+
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.password,
     userData.password
   );
+
+  if (!isCorrectPassword) {
+    throw new Error("Incorrect password");
+  }
 
   const accessToken = jwt.sign(
     {
@@ -18,10 +23,23 @@ const loginUser = async (payload: { email: string; password: string }) => {
       role: userData.role,
     },
     "abcdefg",
-    { algorithm: "HS256", expiresIn: "15m" }
+    { algorithm: "HS256", expiresIn: "5m" }
   );
-  console.log(accessToken);
-  return userData;
+
+  const refreshToken = jwt.sign(
+    {
+      email: userData.email,
+      role: userData.role,
+    },
+    "abcdefghij",
+    { algorithm: "HS256", expiresIn: "30d" }
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+    needPasswordChange: userData.needPasswordChange,
+  };
 };
 
 export const AuthService = {
