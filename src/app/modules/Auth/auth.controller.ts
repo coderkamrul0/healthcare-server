@@ -34,10 +34,6 @@ const generateRefreshToken = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: "User logged in successfully",
     data: result,
-    // data: {
-    //   accessToken: result.accessToken,
-    //   needPasswordChange: result.needPasswordChange,
-    // },
   });
 });
 
