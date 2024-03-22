@@ -4,6 +4,7 @@ import { jwtHelpers } from "./../../../helpers/jwtHelpers";
 import { UserStatus } from "@prisma/client";
 import config from "../../../config";
 import { Secret } from "jsonwebtoken";
+import emailSender from "./emailSender";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
@@ -137,7 +138,13 @@ const forgotPassword = async (payload: { email: string }) => {
   const resetPasswordLink =
     config.reset_password_link +
     `?id=${userData.id}&token=${resetPasswordToken}`;
-  console.log(resetPasswordLink);
+  await emailSender(
+    userData.email,
+    `<p>You are receiving this email because a password reset request has been initiated for your account.</p>
+  <p>Please click on the following link, or paste this into your browser to complete the process:</p>
+  <p><a href="${resetPasswordLink}">Reset Password</a></p>
+  <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>`
+  );
 };
 
 export const AuthService = {
