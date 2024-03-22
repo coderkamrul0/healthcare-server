@@ -5,6 +5,8 @@ import { UserStatus } from "@prisma/client";
 import config from "../../../config";
 import { Secret } from "jsonwebtoken";
 import emailSender from "./emailSender";
+import ApiError from "../../errors/ApiError";
+import httpStatus from "http-status";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
@@ -147,9 +149,46 @@ const forgotPassword = async (payload: { email: string }) => {
   );
 };
 
+const resetPassword = async (
+  token: string,
+  payload: { id: string; password: string }
+) => {
+  const { id, password } = payload;
+  // Step 1: Verify the token
+  const isValidToken = jwtHelpers.verifyToken(
+    token,
+    config.jwt.reset_password_secret as Secret
+  );
+
+  if (!isValidToken) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Invalid or expired token");
+  }
+
+  const userData = await prisma.user.findFirstOrThrow({
+    where: {
+      id,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  if (!userData) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  const newHashedPassword: string = await bcrypt.hash(payload.password, 12);
+
+  await prisma.user.update({
+    where: { id },
+    data: {
+      password: newHashedPassword,
+    },
+  });
+};
+
 export const AuthService = {
   loginUser,
   generateRefreshToken,
   changePassword,
   forgotPassword,
+  resetPassword,
 };
