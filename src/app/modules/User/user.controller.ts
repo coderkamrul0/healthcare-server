@@ -1,23 +1,41 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { userService } from "./user.service";
+import catchAsync from "../../../shared/catchAsync";
+import sendResponse from "../../../shared/sendResponse";
+import httpStatus from "http-status";
 
-const createAdmin = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await userService.createAdmin(req);
-    res.status(200).json({
-      success: true,
-      message: "Admin created successfully.",
-      data: result,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error?.name || "Something went wrong.",
-      error: error,
-    });
-  }
-};
+const createAdmin = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createAdmin(req);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Admin Created successfully!",
+    data: result,
+  });
+});
+
+const createDoctor = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createDoctor(req);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctor Created successfully!",
+    data: result,
+  });
+});
+
+const createPatient = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createPatient(req);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Patient Created successfully!",
+    data: result,
+  });
+});
 
 export const userController = {
   createAdmin,
+  createDoctor,
+  createPatient,
 };
