@@ -141,9 +141,8 @@ const getAllUserFromDB = async (params: any, options: IPaginationOptions) => {
       updatedAt: true,
       admin: true,
       patient: true,
-      doctor: true
+      doctor: true,
     },
-    
   });
   const total = await prisma.user.count({
     where: whereConditions,
@@ -154,9 +153,26 @@ const getAllUserFromDB = async (params: any, options: IPaginationOptions) => {
   };
 };
 
+const changeProfileStatus = async (id: string, status: UserRole) => {
+  await prisma.user.findFirstOrThrow({
+    where: {
+      id,
+    },
+  });
+
+  const updateUserStatus = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: status,
+  });
+  return updateUserStatus;
+};
+
 export const userService = {
   createAdmin,
   createDoctor,
   createPatient,
   getAllUserFromDB,
+  changeProfileStatus,
 };
