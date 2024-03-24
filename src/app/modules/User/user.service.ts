@@ -113,7 +113,6 @@ const getAllUserFromDB = async (params: any, options: IPaginationOptions) => {
       AND: Object.keys(filterData).map((key) => ({
         [key]: {
           equals: (filterData as any)[key],
-          mode: "insensitive",
         },
       })),
     });
@@ -132,6 +131,19 @@ const getAllUserFromDB = async (params: any, options: IPaginationOptions) => {
             [sortBy]: sortOrder,
           }
         : { createdAt: "asc" },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      needPasswordChange: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      admin: true,
+      patient: true,
+      doctor: true
+    },
+    
   });
   const total = await prisma.user.count({
     where: whereConditions,
