@@ -1,4 +1,11 @@
-import { Admin, Doctor, Patient, Prisma, UserRole } from "@prisma/client";
+import {
+  Admin,
+  Doctor,
+  Patient,
+  Prisma,
+  UserRole,
+  UserStatus,
+} from "@prisma/client";
 import bcrypt from "bcrypt";
 import { prisma } from "../../../shared/prisma";
 import { FileUploader } from "../../../helpers/fileUploader";
@@ -213,6 +220,46 @@ const getMyProfile = async (user: any) => {
   return { ...userInfo, ...profileInfo };
 };
 
+const updateMyProfile = async (user: any, payload: any) => {
+  const userInfo = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: user.email,
+      status: UserStatus.ACTIVE,
+    },
+  });
+  let profileInfo;
+  if (userInfo?.role === UserRole.SUPER_ADMIN) {
+    profileInfo = await prisma.admin.update({
+      where: {
+        email: userInfo.email,
+      },
+      data: payload,
+    });
+  } else if (userInfo?.role === UserRole.ADMIN) {
+    profileInfo = await prisma.admin.update({
+      where: {
+        email: userInfo.email,
+      },
+      data: payload,
+    });
+  } else if (userInfo?.role === UserRole.DOCTOR) {
+    profileInfo = await prisma.doctor.update({
+      where: {
+        email: userInfo.email,
+      },
+      data: payload,
+    });
+  } else if (userInfo?.role === UserRole.PATIENT) {
+    profileInfo = await prisma.patient.update({
+      where: {
+        email: userInfo.email,
+      },
+      data: payload,
+    });
+  }
+  return { ...profileInfo };
+};
+
 export const userService = {
   createAdmin,
   createDoctor,
@@ -220,4 +267,5 @@ export const userService = {
   getAllUserFromDB,
   changeProfileStatus,
   getMyProfile,
+  updateMyProfile,
 };

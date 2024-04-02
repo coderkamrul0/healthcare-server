@@ -61,12 +61,23 @@ const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMyProfile = catchAsync(async (req, res) => {
-  const user = req.user
+  const user = req.user;
   const result = await userService.getMyProfile(user);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Profile data fetched.",
+    data: result,
+  });
+});
+const updateMyProfile = catchAsync(async (req, res) => {
+  const user = req.user;
+
+  const result = await userService.updateMyProfile(user, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Profile updated successfully.",
     data: result,
   });
 });
@@ -78,4 +89,5 @@ export const userController = {
   getAllUserFromDB,
   changeProfileStatus,
   getMyProfile,
+  updateMyProfile,
 };
