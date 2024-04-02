@@ -60,10 +60,22 @@ const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyProfile = catchAsync(async (req, res) => {
+  const user = req.user
+  const result = await userService.getMyProfile(user);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Profile data fetched.",
+    data: result,
+  });
+});
+
 export const userController = {
   createAdmin,
   createDoctor,
   createPatient,
   getAllUserFromDB,
   changeProfileStatus,
+  getMyProfile,
 };

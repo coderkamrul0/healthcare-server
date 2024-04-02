@@ -8,6 +8,12 @@ import { UserValidationSchema } from "./user.validation";
 const router = express.Router();
 
 router.get(
+  "/me",
+  auth(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT, UserRole.SUPER_ADMIN),
+  userController.getMyProfile
+);
+
+router.get(
   "/",
   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   userController.getAllUserFromDB
