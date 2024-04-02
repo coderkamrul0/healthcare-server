@@ -18,4 +18,13 @@ router.post(
   }
 );
 
+router.patch(
+  "/:specialtyId",
+  FileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    return SpecialtiesController.updateSpecialties(req, res, next);
+  }
+);
+
 export const SpecialtiesRoutes = router;

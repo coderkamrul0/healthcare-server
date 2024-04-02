@@ -13,6 +13,7 @@ const insertSpecialties = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const getAllSpecialties = catchAsync(async (req: Request, res: Response) => {
   const result = await SpecialtiesServices.getAllSpecialties();
   sendResponse(res, {
@@ -23,7 +24,19 @@ const getAllSpecialties = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateSpecialties = catchAsync(async (req: Request, res: Response) => {
+  const { specialtyId } = req.params;
+  const result = await SpecialtiesServices.updateSpecialties(req, specialtyId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Specialties updated successfully.",
+    data: result,
+  });
+});
+
 export const SpecialtiesController = {
   insertSpecialties,
   getAllSpecialties,
+  updateSpecialties,
 };
