@@ -13,7 +13,17 @@ const insertSpecialties = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAllSpecialties = catchAsync(async (req: Request, res: Response) => {
+  const result = await SpecialtiesServices.getAllSpecialties();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All Specialties retractive Successfully.",
+    data: result,
+  });
+});
 
 export const SpecialtiesController = {
   insertSpecialties,
+  getAllSpecialties,
 };
