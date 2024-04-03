@@ -146,9 +146,63 @@ const softDelete = async (id: string): Promise<Doctor> => {
   });
 };
 
+const updateDoctor = async (id: string, payload: any) => {
+  const { specialities, ...DoctorData } = payload;
+  const doctorInfo = await prisma.doctor.findUniqueOrThrow({
+    where: {
+      id: id,
+    },
+  });
+
+  const result = await prisma.$transaction(async (transactionClient) => {
+    const updatedDoctorData = await transactionClient.doctor.update({
+      where: {
+        id,
+      },
+      data: DoctorData,
+      include: {
+        doctorSpecialities: true,
+      },
+    });
+
+    if (specialities && specialities.length > 0) {
+      // delete
+      const deleteSpecialtiesId = specialities.filter(
+        (specialty: { isDeleted: any }) => specialty.isDeleted
+      );
+      for (const specialty of deleteSpecialtiesId) {
+        const createDoctorSpecialties =
+          await transactionClient.doctorSpecialities.deleteMany({
+            where: {
+              doctorId: doctorInfo.id,
+              specialitiesId: specialty.specialtiesId,
+            },
+          });
+      }
+      // create
+      const createSpecialtiesId = specialities.filter(
+        (specialty: { isDeleted: any }) => !specialty.isDeleted
+      );
+      for (const specialty of createSpecialtiesId) {
+        const createDoctorSpecialties =
+          await transactionClient.doctorSpecialities.create({
+            data: {
+              doctorId: doctorInfo.id,
+              specialitiesId: specialty.specialtiesId,
+            },
+          });
+      }
+    }
+
+    return updatedDoctorData;
+  });
+  return result;
+};
+
 export const DoctorServices = {
   getAllDoctorFromDB,
   getByIdFromDB,
   deleteFromDB,
   softDelete,
+  updateDoctor,
 };

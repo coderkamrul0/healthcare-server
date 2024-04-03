@@ -55,9 +55,21 @@ const softDelete = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateDoctor = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await DoctorServices.updateDoctor(id, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctor updated successfully",
+    data: result,
+  });
+});
+
 export const DoctorController = {
   getAllDoctorFromDB,
   getByIdFromDB,
   deleteFromDB,
   softDelete,
+  updateDoctor,
 };
