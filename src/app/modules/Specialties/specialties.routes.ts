@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
-import { SpecialtiesController } from "./specialties.controller";
 import { FileUploader } from "../../../helpers/fileUploader";
 import { SpecialtiesValidation } from "./specailties.validation";
+import { SpecialtiesController } from "./specialties.controller";
 
 const router = express.Router();
 
@@ -18,13 +18,6 @@ router.post(
   }
 );
 
-router.patch(
-  "/:specialtyId",
-  FileUploader.upload.single("file"),
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = JSON.parse(req.body.data);
-    return SpecialtiesController.updateSpecialties(req, res, next);
-  }
-);
+router.delete("/:specialtyId", SpecialtiesController.deleteSpecialties);
 
 export const SpecialtiesRoutes = router;

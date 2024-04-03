@@ -24,13 +24,13 @@ const getAllSpecialties = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateSpecialties = catchAsync(async (req: Request, res: Response) => {
+const deleteSpecialties = catchAsync(async (req: Request, res: Response) => {
   const { specialtyId } = req.params;
-  const result = await SpecialtiesServices.updateSpecialties(req, specialtyId);
+  const result = await SpecialtiesServices.deleteSpecialties(specialtyId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Specialties updated successfully.",
+    message: "Specialties Deleted successfully.",
     data: result,
   });
 });
@@ -38,5 +38,5 @@ const updateSpecialties = catchAsync(async (req: Request, res: Response) => {
 export const SpecialtiesController = {
   insertSpecialties,
   getAllSpecialties,
-  updateSpecialties,
+  deleteSpecialties,
 };
