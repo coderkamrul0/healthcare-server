@@ -9,4 +9,6 @@ router.get("/:id", PatientController.getByIdFromDB);
 
 router.patch("/:id", PatientController.updateByIdFromDB);
 
+router.delete("/:id", PatientController.deleteFromDB);
+
 export const PatientRoutes = router;
