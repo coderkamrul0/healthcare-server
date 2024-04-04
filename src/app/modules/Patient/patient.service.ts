@@ -1,4 +1,4 @@
-import { Patient, Prisma } from "@prisma/client";
+import { Patient, Prisma, UserStatus } from "@prisma/client";
 import { paginationHelper } from "../../../helpers/paginationHelper";
 import { IPaginationOptions } from "../../interfaces/pagination";
 import { patientSearchableFields } from "./patient.constant";
@@ -175,9 +175,33 @@ const deleteFromDB = async (id: string) => {
   return result;
 };
 
+const softDelete = async (id: string) => {
+  const result = await prisma.$transaction(async (transactionClient) => {
+    const deletedPatient = await transactionClient.patient.update({
+      where: {
+        id,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+    await transactionClient.user.update({
+      where: {
+        email: deletedPatient.email,
+      },
+      data: {
+        status: UserStatus.DELETED,
+      },
+    });
+    return deletedPatient;
+  });
+  return result;
+};
+
 export const PatientService = {
   getAllFromDB,
   getByIdFromDB,
   updateByIdFromDB,
   deleteFromDB,
+  softDelete,
 };
