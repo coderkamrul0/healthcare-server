@@ -3,6 +3,8 @@ import { paginationHelper } from "../../../helpers/paginationHelper";
 import { prisma } from "../../../shared/prisma";
 import { IAuthUser } from "../../interfaces/common";
 import { IPaginationOptions } from "../../interfaces/pagination";
+import ApiError from "../../errors/ApiError";
+import httpStatus from "http-status";
 
 const insertIntoDB = async (user: any, payload: { scheduleIds: string[] }) => {
   const doctorData = await prisma.doctor.findUniqueOrThrow({
@@ -107,6 +109,20 @@ const deleteFromDB = async (user: IAuthUser, id: string) => {
       email: user?.email,
     },
   });
+
+  const isBookedSchedule = await prisma.doctorSchedule.findUnique({
+    where: {
+      doctorId_scheduleId: {
+        doctorId: doctorData.id,
+        scheduleId: id,
+      },
+      isBooked: true,
+    },
+  });
+
+  if (isBookedSchedule) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "This schedule already booked.");
+  }
 
   const result = await prisma.doctorSchedule.delete({
     where: {
