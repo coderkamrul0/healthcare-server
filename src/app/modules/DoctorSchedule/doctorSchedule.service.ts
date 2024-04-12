@@ -101,7 +101,27 @@ const getMySchedule = async (
   };
 };
 
+const deleteFromDB = async (user: IAuthUser, id: string) => {
+  const doctorData = await prisma.doctor.findUniqueOrThrow({
+    where: {
+      email: user?.email,
+    },
+  });
+
+  const result = await prisma.doctorSchedule.delete({
+    where: {
+      doctorId_scheduleId: {
+        doctorId: doctorData.id,
+        scheduleId: id,
+      },
+    },
+  });
+
+  return result;
+};
+
 export const DoctorScheduleService = {
   insertIntoDB,
   getMySchedule,
+  deleteFromDB,
 };
