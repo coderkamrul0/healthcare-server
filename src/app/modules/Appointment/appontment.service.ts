@@ -23,20 +23,36 @@ const createAppointment = async (user: IAuthUser, payload: any) => {
     },
   });
 
-  const videoCallingId = await uuidv4();
+  const videoCallingId: string = await uuidv4();
 
-  const result = await prisma.appointment.create({
-    data: {
-      patientId: patientInfo.id,
-      doctorId: doctorInfo.id,
-      scheduleId: payload.scheduleId,
-      videoCallingId,
-    },
-    include: {
-      patient: true,
-      doctor: true,
-      schedule: true,
-    },
+  const result = await prisma.$transaction(async (tx) => {
+    const appointmentData = await tx.appointment.create({
+      data: {
+        patientId: patientInfo.id,
+        doctorId: doctorInfo.id,
+        scheduleId: payload.scheduleId,
+        videoCallingId,
+      },
+      include: {
+        patient: true,
+        doctor: true,
+        schedule: true,
+      },
+    });
+
+    await tx.doctorSchedule.update({
+      where: {
+        doctorId_scheduleId: {
+          doctorId: doctorInfo.id,
+          scheduleId: payload.scheduleId,
+        },
+      },
+      data: {
+        isBooked: true,
+        appointmentId: appointmentData.id,
+      },
+    });
+    return appointmentData;
   });
 
   return result;
